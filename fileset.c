@@ -241,8 +241,6 @@ fileset_alloc_leafdir(filesetentry_t *entry)
 
 	fileset = entry->fse_fileset;
 	(void) fb_strlcpy(path, avd_get_str(fileset->fs_path), MAXPATHLEN);
-	(void) fb_strlcat(path, "/", MAXPATHLEN);
-	(void) fb_strlcat(path, avd_get_str(fileset->fs_name), MAXPATHLEN);
 	pathtmp = fileset_resolvepath(entry);
 	(void) fb_strlcat(path, pathtmp, MAXPATHLEN);
 	free(pathtmp);
@@ -285,8 +283,6 @@ fileset_alloc_file(filesetentry_t *entry)
 
 	fileset = entry->fse_fileset;
 	(void) fb_strlcpy(path, avd_get_str(fileset->fs_path), MAXPATHLEN);
-	(void) fb_strlcat(path, "/", MAXPATHLEN);
-	(void) fb_strlcat(path, avd_get_str(fileset->fs_name), MAXPATHLEN);
 	pathtmp = fileset_resolvepath(entry);
 	(void) fb_strlcat(path, pathtmp, MAXPATHLEN);
 	free(pathtmp);
@@ -430,8 +426,6 @@ fileset_openfile(fb_fdesc_t *fdesc, fileset_t *fileset,
 	int open_attrs = 0;
 
 	(void) fb_strlcpy(path, avd_get_str(fileset->fs_path), MAXPATHLEN);
-	(void) fb_strlcat(path, "/", MAXPATHLEN);
-	(void) fb_strlcat(path, avd_get_str(fileset->fs_name), MAXPATHLEN);
 	pathtmp = fileset_resolvepath(entry);
 	(void) fb_strlcat(path, pathtmp, MAXPATHLEN);
 	(void) fb_strlcpy(dir, path, MAXPATHLEN);
@@ -1007,8 +1001,6 @@ fileset_create(fileset_t *fileset)
 
 	/* set up path to fileset */
 	(void) fb_strlcpy(path, fileset_path, MAXPATHLEN);
-	(void) fb_strlcat(path, "/", MAXPATHLEN);
-	(void) fb_strlcat(path, fileset_name, MAXPATHLEN);
 
 	/* if reusing and trusting to exist, just blindly reuse */
 	if (avd_get_bool(fileset->fs_trust_tree)) {
@@ -1170,27 +1162,17 @@ fileset_create(fileset_t *fileset)
 static void
 fileset_delete_storage(fileset_t *fileset)
 {
-	char path[MAXPATHLEN];
 	char *fileset_path;
-	char *fileset_name;
 
 	if ((fileset_path = avd_get_str(fileset->fs_path)) == NULL)
-		return;
-
-	if ((fileset_name = avd_get_str(fileset->fs_name)) == NULL)
 		return;
 
 	/* treat raw device as special case */
 	if (fileset->fs_attrs & FILESET_IS_RAW_DEV)
 		return;
 
-	/* set up path to file */
-	(void) fb_strlcpy(path, fileset_path, MAXPATHLEN);
-	(void) fb_strlcat(path, "/", MAXPATHLEN);
-	(void) fb_strlcat(path, fileset_name, MAXPATHLEN);
-
 	/* now delete any files and directories on the disk */
-	FB_RECUR_RM(path);
+	FB_RECUR_RM(fileset_path);
 }
 
 /*
@@ -1708,7 +1690,6 @@ fileset_checkraw(fileset_t *fileset)
 	char path[MAXPATHLEN];
 	struct stat64 sb;
 	char *pathname;
-	char *setname;
 
 	fileset->fs_attrs &= (~FILESET_IS_RAW_DEV);
 
@@ -1718,15 +1699,7 @@ fileset_checkraw(fileset_t *fileset)
 		filebench_shutdown(1);
 	}
 
-	if ((setname = avd_get_str(fileset->fs_name)) == NULL) {
-		filebench_log(LOG_ERROR, "%s name not set",
-		    fileset_entity_name(fileset));
-		filebench_shutdown(1);
-	}
-
 	(void) fb_strlcpy(path, pathname, MAXPATHLEN);
-	(void) fb_strlcat(path, "/", MAXPATHLEN);
-	(void) fb_strlcat(path, setname, MAXPATHLEN);
 	if ((stat64(path, &sb) == 0) &&
 	    ((sb.st_mode & S_IFMT) == S_IFBLK)) {
 		fileset->fs_attrs |= FILESET_IS_RAW_DEV;
