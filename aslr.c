@@ -27,10 +27,16 @@ linux_disable_aslr()
 {
 	int r;
 
-	(void) personality(0xffffffff);
-	r = personality(0xffffffff | ADDR_NO_RANDOMIZE);
+	r = personality(0xffffffff);
+	filebench_log(LOG_INFO, "Default returned: %d", r);
+
+	filebench_log(LOG_INFO, "Setting personality: %d", r | ADDR_NO_RANDOMIZE);
+	r = personality(r | ADDR_NO_RANDOMIZE);
 	if (r == -1)
 		filebench_log(LOG_ERROR, "Could not disable ASLR");
+
+	r = personality(0xffffffff);
+	filebench_log(LOG_INFO, "New personality: %d", r);
 }
 #else /* HAVE_SYS_PERSONALITY_H && HAVE_ADDR_NO_RANDOMIZE */
 void
