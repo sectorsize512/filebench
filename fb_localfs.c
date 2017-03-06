@@ -118,7 +118,7 @@ static fsplug_func_t fb_lfs_funcs =
 static int fb_lfsflow_aiowrite(threadflow_t *threadflow, flowop_t *flowop);
 static int fb_lfsflow_aiowait(threadflow_t *threadflow, flowop_t *flowop);
 
-static flowop_proto_t fb_lfsflow_funcs[] = {
+static struct flowop_proto fb_lfsflow_funcs[] = {
 	{FLOW_TYPE_AIO, FLOW_ATTR_WRITE, "aiowrite", flowop_init_generic,
 	fb_lfsflow_aiowrite, flowop_destruct_generic},
 	{FLOW_TYPE_AIO, 0, "aiowait", flowop_init_generic,
@@ -147,7 +147,7 @@ fb_lfs_newflowops(void)
 {
 #ifdef HAVE_AIO
 	int nops;
-	nops = sizeof (fb_lfsflow_funcs) / sizeof (flowop_proto_t);
+	nops = sizeof (fb_lfsflow_funcs) / sizeof (struct flowop_proto);
 	flowop_add_from_proto(fb_lfsflow_funcs, nops);
 #endif /* HAVE_AIO */
 }

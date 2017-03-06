@@ -112,7 +112,7 @@ static int flowoplib_testrandvar(threadflow_t *threadflow, flowop_t *flowop);
 static int flowoplib_testrandvar_init(flowop_t *flowop);
 static void flowoplib_testrandvar_destruct(flowop_t *flowop);
 
-static flowop_proto_t flowoplib_funcs[] = {
+static struct flowop_proto flowoplib_funcs[] = {
 	{FLOW_TYPE_IO, FLOW_ATTR_WRITE, "write", flowop_init_generic,
 	flowoplib_write, flowop_destruct_generic},
 	{FLOW_TYPE_IO, FLOW_ATTR_READ, "read", flowop_init_generic,
@@ -187,8 +187,7 @@ static flowop_proto_t flowoplib_funcs[] = {
 void
 flowoplib_flowinit(void)
 {
-	int nops = sizeof (flowoplib_funcs) / sizeof (flowop_proto_t);
-
+	int nops = sizeof(flowoplib_funcs) / sizeof(struct flowop_proto);
 	flowop_add_from_proto(flowoplib_funcs, nops);
 }
 

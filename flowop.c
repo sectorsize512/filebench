@@ -1122,16 +1122,14 @@ flowop_destruct_generic(flowop_t *flowop)
  * flowops are set to instance FLOW_DEFINITION (0).
  */
 void
-flowop_add_from_proto(flowop_proto_t *list, int nops)
+flowop_add_from_proto(struct flowop_proto *list, int nops)
 {
+	struct flowop_proto *flproto;
+	flowop_t *flowop;
 	int i;
 
 	for (i = 0; i < nops; i++) {
-		flowop_t *flowop;
-		flowop_proto_t *flproto;
-
 		flproto = &(list[i]);
-
 
 		flowop = flowop_define(NULL, flproto->fl_name, NULL,
 			NULL, FLOW_DEFINITION, flproto->fl_type);

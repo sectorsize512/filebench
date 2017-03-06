@@ -114,14 +114,14 @@ typedef struct flowop {
 #define	FLOW_TYPE_COMPOSITE	4  /* Op is a composite flowop */
 #define	FLOW_TYPE_OTHER		5  /* Op is a something else */
 
-typedef struct flowop_proto {
+struct flowop_proto {
 	int	fl_type;
 	int	fl_attrs;
 	char	*fl_name;
 	int	(*fl_init)();
 	int	(*fl_func)();
 	void	(*fl_destruct)();
-} flowop_proto_t;
+};
 
 extern struct flowstats controlstats;
 extern pthread_mutex_t controlstats_lock;
@@ -134,7 +134,7 @@ flowop_t *flowop_find_one(char *name, int instance);
 flowop_t *flowop_find_from_list(char *name, flowop_t *list);
 int flowop_init_generic(flowop_t *flowop);
 void flowop_destruct_generic(flowop_t *flowop);
-void flowop_add_from_proto(flowop_proto_t *list, int nops);
+void flowop_add_from_proto(struct flowop_proto *list, int nops);
 int flowoplib_iosetup(threadflow_t *threadflow, flowop_t *flowop,
     fbint_t *wssp, caddr_t *iobufp, fb_fdesc_t **filedescp, fbint_t iosize);
 void flowoplib_flowinit(void);
